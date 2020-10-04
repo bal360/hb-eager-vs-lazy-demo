@@ -3,6 +3,7 @@ package com.blakelong.hibernate.main;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
+import org.hibernate.query.Query;
 
 import com.blakelong.hibernate.entity.Course;
 import com.blakelong.hibernate.entity.Instructor;
@@ -27,13 +28,24 @@ public class FetchJoinDemo {
 			// start a transaction
 			session.beginTransaction();
 			
-			// get the instructor from the db
+			// option 2: Hibernate query with HQL
+			
+			// get the instructor AND courses at same time using JOIN FETCH query
 			int theId = 1;
-			Instructor instructor = session.get(Instructor.class, theId);
+			
+			Query<Instructor> query = 
+					session.createQuery("SELECT i FROM Instructor i "
+							+ "JOIN FETCH i.courses "
+							+ "WHERE i.id=:theInstructorId",
+							Instructor.class);
+			
+			// set parameter on query
+			query.setParameter("theInstructorId", theId);
+			
+			// execute query and get instructor
+			Instructor instructor = query.getSingleResult();
 			
 			System.out.println("breakpoint here Instructor: " + instructor);
-			
-			System.out.println("breakpoint as Courses: " + instructor.getCourses());
 			
 			// commit transaction
 			session.getTransaction().commit();
@@ -42,12 +54,9 @@ public class FetchJoinDemo {
 			session.close();
 			
 			System.out.println("\n**The session is closed here**\n");
-			// option 1: call getter while session is open
-			
-			// retrieve the courses for instructor after session is closed by first 
-			// lazy loading courses when session was still open
-			System.out.println("breakpoint as Courses: " + instructor.getCourses());
-			
+		
+			// get courses after session is closed
+			System.out.println("breakpoint here Courses: " + instructor.getCourses());
 			System.out.println("Done");
 			
 		} finally {
