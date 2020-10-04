@@ -8,7 +8,7 @@ import com.blakelong.hibernate.entity.Course;
 import com.blakelong.hibernate.entity.Instructor;
 import com.blakelong.hibernate.entity.InstructorDetail;
 
-public class EagerLazyDemo {
+public class FetchJoinDemo {
 
 	public static void main(String[] args) {
 		
